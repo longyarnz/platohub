@@ -1,1 +1,1 @@
-web: node ./server/app
+web: yarn start -- --port ${PORT?}
