@@ -14,6 +14,6 @@ pipelines:
         caches:
           - node
         script: # Modify the commands below to build your repository.
-          - npm install
-          - npm compile
+          - yarn
+          - yarn compile
           - git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git HEAD:master
