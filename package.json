@@ -29,9 +29,9 @@
   },
   "scripts": {
     "dev": "nodemon --exec babel-node -- app.js",
-    "start": "yarn build && node server/app",
+    "start": "yarn build && node ./server/app",
     "babel": "babel-node app",
-    "build": "babel **/*.js -d server --ignore node_modules,server,build,docs"
+    "build": "babel *.js **/*.js -d server --ignore node_modules,server,build,docs"
   },
   "babel": {
     "presets": [
