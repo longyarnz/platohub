@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A simple Node Wallet API service",
   "author": "Ayodele Olalekan <longyarnz@gmail.com>",
+  "main": "app.js",
   "license": "MIT",
   "dependencies": {
     "babel-plugin-transform-runtime": "^6.23.0",
