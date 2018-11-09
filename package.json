@@ -2,7 +2,6 @@
   "name": "platohub",
   "version": "1.0.0",
   "description": "A simple Node Wallet API service",
-  "main": "app.js",
   "author": "Ayodele Olalekan <longyarnz@gmail.com>",
   "license": "MIT",
   "dependencies": {
