@@ -17,10 +17,10 @@
     "jsonwebtoken": "^7.4.3",
     "mongoose": "^5.2.16",
     "uuid": "^3.2.1",
-    "winston": "^3.0.0-rc4"
+    "winston": "^3.0.0-rc4",
+    "babel-cli": "^6.26.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-register": "^6.26.0",
@@ -29,10 +29,9 @@
   },
   "scripts": {
     "dev": "nodemon --exec babel-node -- app.js",
-    "start": "node ./server/app",
+    "start": "yarn build && node ./server/app",
     "babel": "babel-node app",
-    "compile": "babel **/*.js -d server --ignore node_modules,server,build,docs",
-    "heroku-postbuild": "yarn compile"
+    "build": "babel **/*.js -d server --ignore node_modules,server,build,docs"
   },
   "babel": {
     "presets": [
