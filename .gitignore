@@ -1,0 +1,9 @@
+# Folders
+node_modules/
+coverage/*
+.vscode/
+server/
+
+# Files
+*.log
+.env
