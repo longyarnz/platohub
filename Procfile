@@ -1,1 +1,1 @@
-web: node ./server/app -- --port ${PORT?}
+web: node server/app -- --port ${PORT?}
