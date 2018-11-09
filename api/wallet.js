@@ -5,9 +5,25 @@
 import express from 'express';
 import tokenParser from '../middleware/tokenParser';
 import { 
-  getUserWallets, createWallet, createWalletAccount, deleteWalletById, updateWalletById, getAccountBalance
+  getUserWallets, createWallet, createWalletAccount, deleteWalletById, updateWalletById, getAccountBalance, getAWalletWhere
 } from '../service/walletService';
 const router = express.Router();
+
+/**
+ * @description Gets a user wallet
+ * @param {middleware} tokenParser - Extracts userId from token
+ * @returns {Response} JSON
+ */
+router.get('/:walletId', tokenParser, async (req, res) => {
+  try {
+    const { params: { walletId} } = req;
+    const wallet = await getAWalletWhere({ _id: walletId });
+    res.status(200).json(wallet);
+  }
+  catch (err) {
+    res.status(400).json('NetworkError: Unable to get user wallets');
+  }
+});
 
 /**
  * @description Gets all user wallets
@@ -94,11 +110,11 @@ router.post('/:walletId/account/:type', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {object} A wallet object
  */
-router.get('/:walletId/:accountId/balance', tokenParser, async (req, res) => {
+router.get('/:walletId/account/:accountId/balance', tokenParser, async (req, res) => {
   try {
     const {params: { walletId, accountId }} = req;
     const balance = await getAccountBalance(walletId, accountId);
-    res.status(200).json(balance);
+    res.status(200).json({ balance });
   }
   catch (err) {
     res.status(400).json(err);

@@ -76,7 +76,7 @@ const deleteWalletById = async (walletId) => {
 const getAnAccountWhere = async (walletId, accountId) => {
   try {
     const wallet = await getAWalletWhere({_id: walletId});
-    const account = wallet.accounts.find(account => account._id === accountId);
+    const account = wallet.accounts.find(account => account._id.toString() === accountId);
     if(account) {
       return account;
     }
@@ -92,7 +92,7 @@ const getAnAccountWhere = async (walletId, accountId) => {
 
 const getAccountBalance = async (walletId, accountId) => {
   try {
-    const account = getAnAccountWhere(walletId, accountId);
+    const account = await getAnAccountWhere(walletId, accountId);
     return account.balance;
   }
   catch (err) {
