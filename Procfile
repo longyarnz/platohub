@@ -1,1 +1,1 @@
-web: node server/app --prefix server --port ${PORT?}
+web: node ./server/app
