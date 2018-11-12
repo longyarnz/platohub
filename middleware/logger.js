@@ -4,13 +4,14 @@
  */
 import { createLogger, format, transports } from 'winston';
 
-const { combine, timestamp, label, printf } = format;
+const { combine, timestamp, printf } = format;
 
 /**
  * @constant {string} Format - This is the format fo logs piped into info.log
  */
 const myFormat = printf(info => `
-  ${info.timestamp} [${info.label}] ${info.level}: ${info.message}
+  ${info.timestamp} ${info.level}: ${info.message}
+  ${info.stack}
 `);
 
 /**
@@ -20,11 +21,10 @@ const myFormat = printf(info => `
  */
 export default createLogger({
   format: combine(
-    label({ label: 'Log to File' }),
     timestamp(),
     myFormat
   ),
   transports: [
-    new transports.File({filename: 'info.log'})
-  ]
+    new transports.File({filename: 'info.log', level: 'error'})
+  ],
 });

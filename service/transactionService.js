@@ -2,24 +2,26 @@
  * @fileoverview Methods for querying data from the transactions collection.
  * @exports { createTransaction, getATransactionWhere, getUserTransactions, deleteTransactionById }
  */
-import { updateWalletAccountById } from './walletService';
+import { getAccountBalance, updateAccountBalance } from './walletService';
 import TransactionModel from '../models/transaction';
-import logger from '../middleware/logger';
 
-const createTransaction = async (type, amount, accountId, walletId) => {
+const createTransaction = async (type, amount, accountId, walletId, userId) => {
   try {
-    const account = await updateWalletAccountById(walletId, accountId, { balance: amount });
-    if(account.balance === amount) {
-      const transaction = await TransactionModel.create({ type, amount, account: accountId, wallet: walletId });
+    const balance = await getAccountBalance(walletId, accountId);
+    const newBalance = type === 'credit' ? balance + amount : balance - amount;
+    const account = await updateAccountBalance(walletId, accountId, newBalance);
+
+    if(account.balance === newBalance) {
+      const transaction = await TransactionModel.create({ type, amount, newBalance, account: accountId, wallet: walletId, user: userId });
       return transaction;
     }
+
     else{
       throw new Error('Network Error: Transaction not completed');
     }
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -29,8 +31,7 @@ const getATransactionWhere = async (query) => {
     return transaction;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -40,8 +41,7 @@ const getUserTransactions = async (created_by) => {
     return transactions;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -51,8 +51,7 @@ const deleteTransactionById = async (transactionId) => {
     return remove.ok === 1;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 

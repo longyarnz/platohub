@@ -1,8 +1,8 @@
-# InfoSpread Data API
+# Data API
 
 ## Author
 * Name: Ayodele Olalekan
-* Email: longyarnz@gmail.com
+* Email: lekanmedia@gmail.com
 
 This is a simple Wallet API. 
 
@@ -27,9 +27,10 @@ The API database is hosted on MongoDB.
   });
 
   const Wallet = new Schema({
-    label: String,
+    name: String,
     accounts: [
       {
+        label: String,
         type: String,
         balance: Number,
       }
@@ -40,8 +41,10 @@ The API database is hosted on MongoDB.
   const Transaction = new Schema({
     type: String,
     amount: Number,
-    wallet: WalletID,
-    account: Number,
+    newBalance: Number,
+    wallet: String,
+    account: String,
+    user: String
   });
 ```
 
@@ -75,8 +78,8 @@ Response from the query will be:
   fetch('https://rapi.herokuapp.com/auth/login', {
     method: 'POST',
     body: JSON.stringify({
-      email,
-      password
+      email: 'moji@platohub.com',
+      password: 'soMEcomPLICATEDstrinG'
     }),
     headers: {
       'Content-Type': 'application/json',
@@ -167,7 +170,7 @@ Response from the query will be:
 
 ```js
   const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZTU5YmIzY2M5M2ExMDAyMWY4ODhkYiIsImlhdCI6MTU0MTc3NDI2MH0.Mtw5n1HWcyQLN5XhdNGov5v4E1pfBVvH08_Oa5dbMPc";
-  fetch('https://rapi.herokuapp.com/wallet/:walletId/account/:type', {
+  fetch('https://rapi.herokuapp.com/wallet/:walletId/accounts/:type', {
     // :type can be 'debit' for debit account or 'credit' for credit account
     method: 'POST',
     headers: {
@@ -189,7 +192,7 @@ Response from the query will be a new Account:
 
 ```js
   const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZTU5YmIzY2M5M2ExMDAyMWY4ODhkYiIsImlhdCI6MTU0MTc3NDI2MH0.Mtw5n1HWcyQLN5XhdNGov5v4E1pfBVvH08_Oa5dbMPc";
-  fetch('https://rapi.herokuapp.com/wallet/:walletId/account/:accountId/balance', {
+  fetch('https://rapi.herokuapp.com/wallet/:walletId/accounts/:accountId/balance', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -201,5 +204,71 @@ Response from the query will be:
 ```json
   {
     "balance": 0,
+  }
+```
+
+#### **Credit an Account**
+
+```js
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZTU5YmIzY2M5M2ExMDAyMWY4ODhkYiIsImlhdCI6MTU0MTc3NDI2MH0.Mtw5n1HWcyQLN5XhdNGov5v4E1pfBVvH08_Oa5dbMPc";
+  fetch('https://rapi.herokuapp.com/transaction', {
+    method: 'POST',
+    body: JSON.stringify({
+      "amount": 120000,
+      "type": "credit",
+      "accountId": "5be910db63b1fc1198d3d6be",
+      "walletId": "5be5e577d4ffe916bc476c34"
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  });
+```
+Response from the query will be:
+```json
+  {
+    "_id": "5be91a299ed5133920542893",
+    "type": "credit",
+    "amount": 120000,
+    "newBalance": 125000,
+    "account": "5be910db63b1fc1198d3d6be",
+    "wallet": "5be5e577d4ffe916bc476c34",
+    "user": "5be5e556d4ffe916bc476c33",
+    "date_created": "2018-11-12T06:14:01.520Z",
+    "__v": 0
+  }
+```
+
+#### **Debit an Account**
+
+```js
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZTU5YmIzY2M5M2ExMDAyMWY4ODhkYiIsImlhdCI6MTU0MTc3NDI2MH0.Mtw5n1HWcyQLN5XhdNGov5v4E1pfBVvH08_Oa5dbMPc";
+  fetch('https://rapi.herokuapp.com/transaction', {
+    method: 'POST',
+    body: JSON.stringify({
+      "amount": 1200,
+      "type": "debit",
+      "accountId": "5be910db63b1fc1198d3d6be",
+      "walletId": "5be5e577d4ffe916bc476c34"
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  });
+```
+Response from the query will be:
+```json
+  {
+    "_id": "5be91a299ed5133920542893",
+    "type": "debit",
+    "amount": 1200,
+    "newBalance": "24000",
+    "account": "5be910db63b1fc1198d3d6be",
+    "wallet": "5be5e577d4ffe916bc476c34",
+    "user": "5be5e556d4ffe916bc476c33",
+    "date_created": "2018-11-12T06:14:01.520Z",
+    "__v": 0
   }
 ```

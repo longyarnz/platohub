@@ -9,8 +9,10 @@ const Schema = mongoose.Schema;
 const Transaction = new Schema({
   type: String,
   amount: Number,
+  newBalance: Number,
   wallet: String,
-  account: Number,
+  account: String,
+  user: String,
   date_created: { type: Date, default: Date.now },
 });
 

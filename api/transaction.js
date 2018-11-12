@@ -3,8 +3,10 @@
  * @exports router
  */
 import express from 'express';
+import logger from '../middleware/logger';
 import tokenParser from '../middleware/tokenParser';
-import { 
+import validateTransactionDetails from '../middleware/validateTransactionDetails';
+import {
   getUserTransactions, createTransaction, deleteTransactionById, getATransactionWhere
 } from '../service/transactionService';
 const router = express.Router();
@@ -21,7 +23,7 @@ router.get('/', tokenParser, async (req, res) => {
     res.status(200).json(transaction);
   }
   catch (err) {
-    res.status(400).json('NetworkError: Unable to get user transactions');
+    logger.error(err); res.status(400).json('NetworkError: Unable to get user transactions');
   }
 });
 
@@ -30,14 +32,15 @@ router.get('/', tokenParser, async (req, res) => {
  * @param {middleware} tokenParser - Extracts userId from token
  * @returns {object} A newly created transaction object
  */
-router.post('/', tokenParser, async (req, res) => {
+router.post('/', validateTransactionDetails, tokenParser, async (req, res) => {
   try {
-    const { body: { amount, accountId, type, walletId } } = req;
-    const transaction = await createTransaction(type, amount, accountId, walletId);
+    const { body: { amount, accountId, type, walletId }, userId } = req;
+    // eslint-disable-next-line no-unused-vars
+    const transaction = await createTransaction(type, amount, accountId, walletId, userId);
     res.status(200).json(transaction);
   }
   catch (err) {
-    res.status(400).json('NetworkError: Unable to create a user transaction');
+    logger.error(err); res.status(400).json('NetworkError: Unable to create a user transaction');
   }
 });
 
@@ -48,12 +51,12 @@ router.post('/', tokenParser, async (req, res) => {
  */
 router.get('/:transactionId', tokenParser, async (req, res) => {
   try {
-    const {params: { transactionId }} = req;
+    const { params: { transactionId } } = req;
     const transaction = await getATransactionWhere({ _id: transactionId });
     res.status(200).json(transaction);
   }
   catch (err) {
-    res.status(400).json('NetworkError: Unable to get user transaction');
+    logger.error(err); res.status(400).json('NetworkError: Unable to get user transaction');
   }
 });
 
@@ -69,7 +72,7 @@ router.delete('/:transactionId', tokenParser, async (req, res) => {
     res.status(200).json(removed);
   }
   catch (err) {
-    res.status(400).json('NetworkError: Unable to delete user transaction');
+    logger.error(err); res.status(400).json('NetworkError: Unable to delete user transaction');
   }
 });
 

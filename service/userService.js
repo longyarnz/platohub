@@ -4,7 +4,6 @@
  */
 import bcrypt from 'bcrypt';
 import UserModel from '../models/user';
-import logger from '../middleware/logger';
 
 const HASH = parseInt(process.env.HASH);
 
@@ -26,8 +25,7 @@ const authenticateUser = async (credentials) => {
     }
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -46,8 +44,7 @@ const createUser = async (credentials) => {
     return typeof user === 'object' ? { isCreated: true, id: user._id } : { isCreated: false, id: null };
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -57,8 +54,7 @@ const checkIfUserExists = async (query) => {
     return user === null ? false : true;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -68,8 +64,7 @@ const getUserEmail =  async (userId) => {
     return email;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 

@@ -9,9 +9,14 @@ import UUID from 'uuid';
 import { authenticateUser, createUser } from '../service/userService';
 import validateInput from '../middleware/validateInput';
 import tokenParser from '../middleware/tokenParser';
+import logger from '../middleware/logger';
 
 const router = express.Router();
-let SERVER_KEY = '641116d9-02db-4b03-a60e-4052d24906eb';
+
+let SERVER_KEY = new Function(`
+  'use strict';
+  return ${process.env.SERVER_KEY}
+`)()(UUID);
 
 /**
  * @description Registers a user into the Server
@@ -33,6 +38,7 @@ router.post('/create', validateInput, async (req, res) => {
     }
   }
   catch (err) {
+    logger.error(err); 
     res.status(400).json(err);
   }
 });
@@ -79,7 +85,7 @@ router.post('/login', validateInput, async (req, res) => {
   }
 
   catch (err) {
-    res.status(400).json(err.message);
+    logger.error(err); res.status(400).json(err.message);
   }
 });
 

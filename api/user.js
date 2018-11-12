@@ -4,7 +4,8 @@
  */
 import express from 'express';
 import tokenParser from '../middleware/tokenParser';
-import { 
+import logger from '../middleware/logger';
+import {
   getUserFriends, addFriends, removeFriends
 } from '../service/userService';
 const router = express.Router();
@@ -21,6 +22,7 @@ router.get('/friends', tokenParser, async (req, res) => {
     res.status(200).json(user);
   }
   catch (err) {
+    logger.error(err); 
     res.status(400).json('NetworkError: Unable to get user wallets');
   }
 });
@@ -37,6 +39,7 @@ router.put('/friends/:friend', tokenParser, async (req, res) => {
     res.status(200).json(wallet);
   }
   catch (err) {
+    logger.error(err); 
     res.status(400).json('NetworkError: Unable to get user wallets');
   }
 });
@@ -53,6 +56,7 @@ router.delete('/friends/:friend', tokenParser, async (req, res) => {
     res.status(200).json(wallet);
   }
   catch (err) {
+    logger.error(err); 
     res.status(400).json('NetworkError: Unable to get user wallets');
   }
 });

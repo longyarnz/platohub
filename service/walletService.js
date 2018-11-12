@@ -1,31 +1,28 @@
 /**
  * @fileoverview Methods for querying data from the wallets collection.
- * @exports { createWallet, getAWalletWhere, getUserWallets, deleteWalletById, updateWalletById, getAnAccountWhere, getAccountBalance, updateWalletAccountById, deleteWalletAccountById }
+ * @exports { createWallet, createWalletAccount, getAWalletWhere, getUserWallets, deleteWalletById, updateWalletById, getWalletAccounts, getAnAccountWhere, getAccountBalance, deleteWalletAccountById, updateAccountBalance }
  */
 import WalletModel from '../models/wallet';
-import logger from '../middleware/logger';
 
-const createWallet = async (userId, label) => {
+const createWallet = async (userId, name) => {
   try {
-    const wallet = await WalletModel.create({ created_by: userId, label });
+    const wallet = await WalletModel.create({ created_by: userId, name });
     return wallet;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
-const createWalletAccount = async (walletId, type) => {
+const createWalletAccount = async (walletId, type, label) => {
   try {
-    const update = { $push: { accounts: { type } } };
+    const update = { $push: { accounts: { type, label } } };
     const wallet = await updateWalletById(walletId, update, {new: true});
     const account = wallet.accounts[wallet.accounts.length - 1];
     return account;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 }
 
@@ -35,8 +32,7 @@ const getAWalletWhere = async (query) => {
     return wallet;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -46,8 +42,7 @@ const getUserWallets = async (created_by) => {
     return wallets;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -57,8 +52,7 @@ const updateWalletById = async (walletId, update) => {
     return wallet;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -68,15 +62,14 @@ const deleteWalletById = async (walletId) => {
     return remove.ok === 1;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
 const getAnAccountWhere = async (walletId, accountId) => {
   try {
     const wallet = await getAWalletWhere({_id: walletId});
-    const account = wallet.accounts.find(account => account._id.toString() === accountId);
+    const account = wallet && wallet.accounts.find(account => account._id.toString() === accountId);
     if(account) {
       return account;
     }
@@ -85,19 +78,29 @@ const getAnAccountWhere = async (walletId, accountId) => {
     }
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
+  }
+};
+
+const getWalletAccounts = async (walletId) => {
+  try {
+    const wallet = await getAWalletWhere({_id: walletId});
+    const { accounts } = wallet.accounts && wallet.accounts.length > 0 ? wallet : {accounts: []};
+    return accounts;
+  }
+  catch (err) {
+    throw err;
   }
 };
 
 const getAccountBalance = async (walletId, accountId) => {
   try {
     const account = await getAnAccountWhere(walletId, accountId);
+    if(!account) throw new Error('Account does not exist');
     return account.balance;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
@@ -106,11 +109,23 @@ const updateWalletAccountById = async (walletId, accountId, update) => {
     const wallet = await WalletModel.findOneAndUpdate({ _id: walletId, 'accounts._id': accountId }, {
       $set: { 'accounts.$': update }
     }, {new: true});
-    return wallet.accounts.sort((a, b) => b.date_created - a.date_created)[0];
+    const updatedAccount = wallet.accounts.find(account => account._id.toString() === accountId);
+    return updatedAccount;
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
+  }
+};
+
+const updateAccountBalance = async (walletId, accountId, balance) => {
+  try {
+    const account = await getAnAccountWhere(walletId, accountId);
+    account.balance = balance;
+    const updatedAccount = await updateWalletAccountById(walletId, accountId, account);
+    return updatedAccount;
+  }
+  catch (err) {
+    throw err;
   }
 };
 
@@ -120,9 +135,8 @@ const deleteWalletAccountById = async (walletId, accountId) => {
     return !wallet.accounts.some(account => account._id.toString() === accountId);
   }
   catch (err) {
-    logger.error(err);
-    return err;
+    throw err;
   }
 };
 
-export { createWallet, createWalletAccount, getAWalletWhere, getUserWallets, deleteWalletById, updateWalletById, getAnAccountWhere, getAccountBalance, updateWalletAccountById, deleteWalletAccountById };
+export { createWallet, createWalletAccount, getAWalletWhere, getUserWallets, deleteWalletById, updateWalletById, getWalletAccounts, getAnAccountWhere, getAccountBalance, deleteWalletAccountById, updateAccountBalance };

@@ -12,6 +12,6 @@ config();
  * @description Creates a connection to the MongoDB server
  */
 mongoose.Promise = promise;
-mongoose.connect(process.env.MONGODB, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useFindAndModify: false });
 
 export default mongoose;
