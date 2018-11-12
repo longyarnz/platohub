@@ -7,7 +7,7 @@ import tokenParser from '../middleware/tokenParser';
 import logger from '../middleware/logger';
 import validateOwnership from '../middleware/validateOwnership';
 import {
-  getUserWallets, createWallet, createWalletAccount, deleteWalletById, updateWalletById, getAccountBalance, getAWalletWhere, getWalletAccounts
+  getUserWallets, createWallet, createWalletAccount, deleteWalletById, updateWalletById, getAccountBalance, getAWalletWhere, getWalletAccounts, getAnAccountWhere
 } from '../service/walletService';
 const router = express.Router();
 
@@ -122,6 +122,23 @@ router.get('/:walletId/accounts', tokenParser, validateOwnership, async (req, re
   try {
     const { params: { walletId } } = req;
     const accounts = await getWalletAccounts(walletId);
+    res.status(200).json(accounts);
+  }
+  catch (err) {
+    logger.error(err); 
+    res.status(400).json(err);
+  }
+});
+
+/**
+ * @description Fetch Wallet Accounts
+ * @param {middleware} tokenParser - Extracts userId from token
+ * @returns {object} A wallet object
+ */
+router.get('/:walletId/accounts/:accountId', tokenParser, validateOwnership, async (req, res) => {
+  try {
+    const { params: { walletId, accountId } } = req;
+    const accounts = await getAnAccountWhere(walletId, accountId);
     res.status(200).json(accounts);
   }
   catch (err) {

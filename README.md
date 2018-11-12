@@ -94,6 +94,30 @@ Response from the query will be:
   }
 ```
 
+#### **Create a Wallet**
+
+```js
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZTU5YmIzY2M5M2ExMDAyMWY4ODhkYiIsImlhdCI6MTU0MTc3NDI2MH0.Mtw5n1HWcyQLN5XhdNGov5v4E1pfBVvH08_Oa5dbMPc";
+  fetch('https://rapi.herokuapp.com/wallet/:walletName', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  });
+```
+Response from the query will be:
+```json
+  {
+    "label": ":walletName",
+    "_id": "5be5d92c958bc200343d8b76",
+    "created_by": "5be59bb3cc93a10021f888db",
+    "accounts": [],
+    "date_created": "2018-11-09T18:59:56.414Z",
+    "__v": 0
+  }
+```
+
 #### **Get a User Wallet**
 
 ```js
@@ -142,37 +166,17 @@ Response from the query will be an Array of objects:
   }]
 ```
 
-#### **Create a Wallet**
-
-```js
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZTU5YmIzY2M5M2ExMDAyMWY4ODhkYiIsImlhdCI6MTU0MTc3NDI2MH0.Mtw5n1HWcyQLN5XhdNGov5v4E1pfBVvH08_Oa5dbMPc";
-  fetch('https://rapi.herokuapp.com/wallet/:walletName', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': token
-    }
-  });
-```
-Response from the query will be:
-```json
-  {
-    "label": ":walletName",
-    "_id": "5be5d92c958bc200343d8b76",
-    "created_by": "5be59bb3cc93a10021f888db",
-    "accounts": [],
-    "date_created": "2018-11-09T18:59:56.414Z",
-    "__v": 0
-  }
-```
-
 #### **Create a Wallet Account**
 
 ```js
   const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZTU5YmIzY2M5M2ExMDAyMWY4ODhkYiIsImlhdCI6MTU0MTc3NDI2MH0.Mtw5n1HWcyQLN5XhdNGov5v4E1pfBVvH08_Oa5dbMPc";
-  fetch('https://rapi.herokuapp.com/wallet/:walletId/accounts/:type', {
+  fetch('https://rapi.herokuapp.com/wallet/:walletId/accounts', {
     // :type can be 'debit' for debit account or 'credit' for credit account
     method: 'POST',
+    body: JSON.stringify({
+      name: 'Savings',
+      type: 'debit'
+    }),
     headers: {
       'Content-Type': 'application/json',
       'Authorization': token
@@ -182,9 +186,32 @@ Response from the query will be:
 Response from the query will be a new Account:
 ```json
   {
-    "type": ":type",
+    "label": "Savings",
+    "type": "debit",
     "balance": 0,
     "_id": "5be556d2b250e235c0ad6363"
+  }
+```
+
+#### **Get An Account**
+
+```js
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZTU5YmIzY2M5M2ExMDAyMWY4ODhkYiIsImlhdCI6MTU0MTc3NDI2MH0.Mtw5n1HWcyQLN5XhdNGov5v4E1pfBVvH08_Oa5dbMPc";
+  fetch('https://rapi.herokuapp.com/wallet/:walletId/accounts/:accountId', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    }
+  });
+```
+Response from the query will be:
+```json
+  {
+    "label": "Luxury",
+    "type": "credit",
+    "balance": 0,
+    "_id": "5be91f41e137c41e2800225d"
   }
 ```
 
